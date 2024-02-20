@@ -16,3 +16,15 @@ same: orchestrate domain operations (also usually using infrastructure services)
 Pretty straight forward, the controller receives the request, calls the related query repo and returns a DTO (defined on infrastructure layer itself).
 
 ![query side](docs/images/query_side.jpg)
+
+# Install
+```
+go install github.com/go-leo/cqrs/cmd/cqrs@latest
+```
+```
+go install github.com/go-leo/cqrs/cmd/cmd/protoc-gen-go-cqrs@latest
+```
+
+# sample
+[sample](cmd/example)
+

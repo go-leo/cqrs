@@ -2,8 +2,6 @@ package gostruct
 
 import "context"
 
-// @CQRS @QueryPath(../../query) @CommandPath(../../command)
-
 //go:generate cqrs -service=Demo
 
 // Demo
