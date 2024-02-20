@@ -91,7 +91,7 @@ func (s teacher) Handle(ctx context.Context, q teacherQuery) (teacherResult, err
 }
 
 func TestBus(t *testing.T) {
-	bus := &bus{}
+	bus := NewBus()
 	var err error
 	var errC <-chan error
 
@@ -118,10 +118,10 @@ func TestBus(t *testing.T) {
 	assert.ErrorIs(t, err, ErrUnimplemented)
 
 	err = bus.Exec(context.Background(), unknown{})
-	assert.ErrorIs(t, err, errors.New("handler unregistered"))
+	assert.ErrorIs(t, err, ErrUnregistered)
 
 	err = bus.Exec(context.Background(), studyCmd{})
-	assert.ErrorIs(t, err, errors.New("handler unregistered"))
+	assert.ErrorIs(t, err, ErrUnregistered)
 
 	err = bus.Exec(context.Background(), &studyCmd{})
 	assert.NoError(t, err)
@@ -130,7 +130,7 @@ func TestBus(t *testing.T) {
 	assert.ErrorIs(t, err, errNotPassed)
 
 	err = bus.Exec(context.Background(), &examCmd{})
-	assert.ErrorIs(t, err, errors.New("handler unregistered"))
+	assert.ErrorIs(t, err, ErrUnregistered)
 
 	errC = bus.AsyncExec(context.Background(), &studyCmd{})
 	assert.NoError(t, <-errC)
@@ -155,10 +155,10 @@ func TestBus(t *testing.T) {
 	assert.ErrorIs(t, err, ErrUnimplemented)
 
 	_, err = bus.Query(context.Background(), unknown{})
-	assert.ErrorIs(t, err, errors.New("handler unregistered"))
+	assert.ErrorIs(t, err, ErrUnregistered)
 
 	_, err = bus.Query(context.Background(), studentQuery{})
-	assert.ErrorIs(t, err, errors.New("handler unregistered"))
+	assert.ErrorIs(t, err, ErrUnregistered)
 
 	r, err := bus.Query(context.Background(), &studentQuery{Id: 10})
 	assert.NoError(t, err)

@@ -4,15 +4,15 @@ go_gen:
 	@go generate ./...
 	@echo "--- go generate end ---"
 
-protoc_cqrs_gen:
+protoc_gen:
 	@echo "--- protoc generate start ---"
 	@protoc \
 		--proto_path=. \
 		--go_out=. \
-		--go_opt=module=github.com/go-leo \
+		--go_opt=module=github.com/go-leo/cqrs \
 		--go-grpc_out=. \
-		--go-grpc_opt=module=github.com/go-leo \
+		--go-grpc_opt=module=github.com/go-leo/cqrs \
 		--go-cqrs_out=. \
-		--go-cqrs_opt=module=github.com/go-leo \
-		cqrs/cmd/example/api/pb/*.proto
+		--go-cqrs_opt=module=github.com/go-leo/cqrs \
+		cmd/example/api/pb/*.proto
 	@echo "--- protoc generate end ---"
