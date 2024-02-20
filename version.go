@@ -1,3 +1,3 @@
-package design_pattern
+package cqrs
 
-const Version = "v1.3.1"
+const Version = "v0.0.1"

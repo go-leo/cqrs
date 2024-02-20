@@ -9,10 +9,10 @@ protoc_cqrs_gen:
 	@protoc \
 		--proto_path=. \
 		--go_out=. \
-		--go_opt=module=github.com/go-leo/design-pattern \
+		--go_opt=module=github.com/go-leo \
 		--go-grpc_out=. \
-		--go-grpc_opt=module=github.com/go-leo/design-pattern \
+		--go-grpc_opt=module=github.com/go-leo \
 		--go-cqrs_out=. \
-		--go-cqrs_opt=module=github.com/go-leo/design-pattern \
+		--go-cqrs_opt=module=github.com/go-leo \
 		cqrs/cmd/example/api/pb/*.proto
 	@echo "--- protoc generate end ---"
