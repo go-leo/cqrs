@@ -5,6 +5,7 @@ import (
 	"github.com/go-leo/gox/contextx"
 	"github.com/go-leo/gox/errorx"
 	"github.com/go-leo/gox/syncx"
+	"github.com/go-leo/gox/syncx/chanx"
 	"reflect"
 	"sync"
 	"sync/atomic"
@@ -181,11 +182,13 @@ func (b *bus) AsyncExec(ctx context.Context, cmd any) <-chan error {
 			return
 		}
 	})
-	if err != nil {
-		errC <- err
-		close(errC)
+	if err == nil {
+		return errC
 	}
-	return errC
+	goErrC := make(chan error, 1)
+	goErrC <- err
+	close(goErrC)
+	return chanx.Combine(goErrC, errC)
 }
 
 func (b *bus) AsyncQuery(ctx context.Context, q any) (<-chan any, <-chan error) {
@@ -203,12 +206,13 @@ func (b *bus) AsyncQuery(ctx context.Context, q any) (<-chan any, <-chan error) 
 		}
 		resC <- res
 	})
-	if err != nil {
-		close(resC)
-		errC <- err
-		close(errC)
+	if err == nil {
+		return resC, errC
 	}
-	return resC, errC
+	goErrC := make(chan error, 1)
+	goErrC <- err
+	close(goErrC)
+	return resC, chanx.Combine(goErrC, errC)
 }
 
 func (b *bus) Close(ctx context.Context) error {
