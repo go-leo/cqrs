@@ -15,7 +15,7 @@ import (
 	"strings"
 )
 
-func Gen() {
+func Gen(mainPkg string) {
 	showVersion := flag.Bool("version", false, "print the version and exit")
 	flag.Parse()
 	if *showVersion {
@@ -30,25 +30,25 @@ func Gen() {
 			if !f.Generate {
 				continue
 			}
-			generateFile(gen, f)
+			generateFile(mainPkg, gen, f)
 		}
 		return nil
 	})
 }
 
-func generateFile(gen *protogen.Plugin, file *protogen.File) {
+func generateFile(mainPkg string, gen *protogen.Plugin, file *protogen.File) {
 	if len(file.Services) == 0 {
 		return
 	}
-	generateFileContent(gen, file)
+	generateFileContent(mainPkg, gen, file)
 }
 
-func generateFileContent(gen *protogen.Plugin, file *protogen.File) {
+func generateFileContent(mainPkg string, gen *protogen.Plugin, file *protogen.File) {
 	if len(file.Services) == 0 {
 		return
 	}
 	for _, service := range file.Services {
-		files, err := getFileInfo(gen, file, service)
+		files, err := getFileInfo(mainPkg, gen, file, service)
 		if err != nil {
 			_, _ = fmt.Fprintf(os.Stderr, "warn: %s\n", err.Error())
 			return
@@ -62,7 +62,7 @@ func generateFileContent(gen *protogen.Plugin, file *protogen.File) {
 	}
 }
 
-func getFileInfo(gen *protogen.Plugin, file *protogen.File, service *protogen.Service) ([]*internal.File, error) {
+func getFileInfo(mainPkg string, gen *protogen.Plugin, file *protogen.File, service *protogen.Service) ([]*internal.File, error) {
 	path := internal.NewPath(splitComment(service.Comments.Leading.String()))
 	if len(path.Command) == 0 || len(path.Query) == 0 {
 		return nil, fmt.Errorf(`%s QueryPath or CommandPath is empty`, service.Desc.FullName())
@@ -75,7 +75,7 @@ func getFileInfo(gen *protogen.Plugin, file *protogen.File, service *protogen.Se
 		if !method.Desc.IsStreamingServer() && !method.Desc.IsStreamingClient() {
 			// Unary RPC method
 			endpoint := method.GoName
-			file := internal.NewFileFromComment(endpoint, queryAbs, commandAbs, splitComment(method.Comments.Leading.String()))
+			file := internal.NewFileFromComment(mainPkg, endpoint, queryAbs, commandAbs, splitComment(method.Comments.Leading.String()))
 			if file == nil {
 				continue
 			}

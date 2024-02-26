@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-	gen.Gen()
+	gen.Gen("github.com/go-leo/cqrs")
 }

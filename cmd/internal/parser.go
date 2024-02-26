@@ -65,7 +65,7 @@ func NewPath(comments []string) *Path {
 	return info
 }
 
-func NewFileFromComment(endpoint string, queryDir, commandDir string, comments []string) *File {
+func NewFileFromComment(mainPkg string, endpoint string, queryDir, commandDir string, comments []string) *File {
 	for _, comment := range comments {
 		text := strings.TrimSpace(strings.TrimPrefix(strings.TrimSpace(comment), "//"))
 		seg := strings.Split(text, " ")
@@ -77,17 +77,18 @@ func NewFileFromComment(endpoint string, queryDir, commandDir string, comments [
 			s = strings.TrimSpace(s)
 			switch {
 			case Query.EqualsIgnoreCase(s):
-				return NewQueryFile(endpoint, queryDir)
+				return NewQueryFile(mainPkg, endpoint, queryDir)
 			case Command.EqualsIgnoreCase(s):
-				return NewCommandFile(endpoint, commandDir)
+				return NewCommandFile(mainPkg, endpoint, commandDir)
 			}
 		}
 	}
 	return nil
 }
 
-func NewQueryFile(endpoint string, queryDir string) *File {
+func NewQueryFile(mainPkg string, endpoint string, queryDir string) *File {
 	r := &File{
+		MainPkg:       mainPkg,
 		Type:          "query",
 		AbsFilename:   path.Join(queryDir, strings.ToLower(addUnderscore(endpoint))+".go"),
 		Package:       path.Base(queryDir),
@@ -97,8 +98,9 @@ func NewQueryFile(endpoint string, queryDir string) *File {
 	return r
 }
 
-func NewCommandFile(endpoint string, commandDir string) *File {
+func NewCommandFile(mainPkg string, endpoint string, commandDir string) *File {
 	r := &File{
+		MainPkg:       mainPkg,
 		Type:          "command",
 		AbsFilename:   path.Join(commandDir, strings.ToLower(addUnderscore(endpoint))+".go"),
 		Package:       path.Base(commandDir),

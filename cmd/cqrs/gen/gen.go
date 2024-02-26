@@ -31,7 +31,7 @@ func init() {
 	log.SetPrefix("cqrs: ")
 }
 
-func Gen() {
+func Gen(mainPkg string) {
 	showVersion := flag.Bool("version", false, "print the version and exit")
 	flag.Usage = Usage
 	flag.Parse()
@@ -108,7 +108,7 @@ func Gen() {
 				method.Doc.List,
 				func(i int, e1 *ast.Comment) string { return e1.Text },
 			)
-			file := internal.NewFileFromComment(endpoint, queryAbs, commandAbs, comments)
+			file := internal.NewFileFromComment(mainPkg, endpoint, queryAbs, commandAbs, comments)
 			if file == nil {
 				continue
 			}

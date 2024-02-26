@@ -14,6 +14,7 @@ var commandContent string
 var queryContent string
 
 type File struct {
+	MainPkg       string
 	Type          string
 	AbsFilename   string
 	Package       string

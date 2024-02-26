@@ -2,7 +2,7 @@ package {{ .Package }}
 
 import (
 	"context"
-	"github.com/go-leo/cqrs"
+	"{{ .MainPkg }}"
 )
 
 type {{ .Endpoint }}Assembler[Req any] interface {
