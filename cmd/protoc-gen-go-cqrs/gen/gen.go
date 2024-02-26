@@ -1,16 +1,40 @@
-package main
+package gen
 
 import (
 	//"strings"
 
 	"bufio"
+	"flag"
 	"fmt"
+	"github.com/go-leo/cqrs"
 	"github.com/go-leo/cqrs/cmd/internal"
 	"google.golang.org/protobuf/compiler/protogen"
+	"google.golang.org/protobuf/types/pluginpb"
 	"os"
 	"path/filepath"
 	"strings"
 )
+
+func Gen() {
+	showVersion := flag.Bool("version", false, "print the version and exit")
+	flag.Parse()
+	if *showVersion {
+		fmt.Printf("protoc-gen-go-gors %v\n", cqrs.Version)
+		return
+	}
+
+	var flags flag.FlagSet
+	protogen.Options{ParamFunc: flags.Set}.Run(func(gen *protogen.Plugin) error {
+		gen.SupportedFeatures = uint64(pluginpb.CodeGeneratorResponse_FEATURE_PROTO3_OPTIONAL)
+		for _, f := range gen.Files {
+			if !f.Generate {
+				continue
+			}
+			generateFile(gen, f)
+		}
+		return nil
+	})
+}
 
 func generateFile(gen *protogen.Plugin, file *protogen.File) {
 	if len(file.Services) == 0 {
@@ -72,14 +96,6 @@ func splitComment(leadingComment string) []string {
 		comments = append(comments, line)
 	}
 	return comments
-}
-
-func clientName(service *protogen.Service) string {
-	return service.GoName + "Client"
-}
-
-func serverName(service *protogen.Service) string {
-	return service.GoName + "Server"
 }
 
 func fullMethodName(service *protogen.Service, method *protogen.Method) string {
